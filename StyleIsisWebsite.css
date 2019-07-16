@@ -1,10 +1,15 @@
 h1{
-    color: teal 
+    color: teal;
+    font-family: monospace;
 }
 p{
-
+font-family: monospace;
 }
 body{
-    background-color: lightsalmon
+    background-color: lightsalmon;
+}
+.myName{
+    font-family: cursive;
+
 }
 
