@@ -6,19 +6,49 @@
     <style>
         * { padding: 0; margin:0;}
         canvas {background:#eee; display: block; margin:0 auto;}
+        body{ background-color: beige; text-align: center; }
+        h1{ 
+            color: rgb(220, 120, 150); 
+            font-family: monospace;
+            font-size: 10em;
+              
+        }
+        h2{ 
+            font-family: monospace;
+            font-size: 3em;
+            color: rgb(220, 120, 150); 
+        }
+        p{ 
+            font-family: monospace;
+            font-size: 1.5em;
+            //color: rgb(150, 220, 120);
+        }
+        .myCanvas{
+            
+        }
     </style>
 </head>
 <body>
-
+    <h1>Breakout</h1>
+    <br>
     <canvas id="myCanvas" width="480" height="320"></canvas>
-
+    
+    <h2>How To Play:</h2>
+    <br>
+    <p>
+     To start press enter. Use either the arrow keys or mouse to move your paddle. 
+     The goal is to break all of the blocks without loosing all three lives.
+    </p>
+    <br>
+    
     <script>
+
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
       
         var x = canvas.width/2;
         var y = canvas.height-30;
-        var dx = 2;
+        var dx = 1;
         var dy = -2;
         var ballRadius = 10;
         var ballChar = "#0095DD";
@@ -30,9 +60,7 @@
         var rightPressed = false;
         var leftPressed = false;
 
-      
-
-        var brickRowCount = 3;
+        var brickRowCount = 4;
         var brickColumnCount = 5;
         var brickWidth = 75;
         var brickHeight = 20;
@@ -40,7 +68,8 @@
         var brickOffsetTop = 30;
         var brickOffsetLeft = 30;
         var bricks = [];
-        var randomBrickColor = getRandomHexColor();
+        
+        var isPlaying = false;
 
         var score = 0;
         var lives = 3;
@@ -55,7 +84,7 @@
         document.addEventListener("keydown", keyDownHandler, false);
         document.addEventListener("keyup", keyUpHandler, false);
         document.addEventListener("mousemove", mouseMoveHandler, false);
-
+       
         function drawBall(){
             ctx.beginPath();
             ctx.arc(x, y, ballRadius, 0, Math.PI*2);
@@ -72,61 +101,65 @@
             collisionDetection();
             drawScore();
             drawLives();
-            x += dx;
-            y += dy;
-            if( y + dy < ballRadius ){
-                dy = -dy;
-                ballChar = getRandomHexColor();
-            }
-            else if(y + dy > canvas.height-ballRadius ){
-                if(x > paddleX && x < paddleX + paddleWidth){
+            if(isPlaying==true){
+                x += dx;
+                y += dy;
+                if( y + dy < ballRadius ){
                     dy = -dy;
+                    ballChar = getRandomHexColor();
                 }
-                else{
-                    lives--;
-                    if(!lives){
-                        alert("GAME OVER");
-                        document.location.reload();
+                else if(y + dy > canvas.height-ballRadius ){
+                    if(x > paddleX && x < paddleX + paddleWidth){
+                        dy = -dy;
                     }
                     else{
-                        x = canvas.width/2;
-                        y = canvas.height-30;
-                        dx = 2;
-                        dy = -2;
-                        paddleX = (canvas.width-paddleWidth)/2;
+                        lives--;
+                        if(!lives){
+                            alert("GAME OVER");
+                            document.location.reload();
+                        }
+                        else{
+                            x = canvas.width/2;
+                            y = canvas.height-30;
+                            dx = 2;
+                            dy = -2;
+                            paddleX = (canvas.width-paddleWidth)/2;
+                        }
                     }
                 }
-            }
-            if(x + dx > canvas.width-ballRadius || x + dx < ballRadius ){
-                dx = -dx;
-                ballChar = getRandomHexColor();
-            }
-            if(rightPressed && paddleX < canvas.width - paddleWidth){
-                paddleX += 7;
-            }
-            else if(leftPressed && paddleX > 0){
-                paddleX -= 7;
+                if(x + dx > canvas.width-ballRadius || x + dx < ballRadius ){
+                    dx = -dx;
+                    ballChar = getRandomHexColor();
+                }
+                if(rightPressed && paddleX < canvas.width - paddleWidth){
+                    paddleX += 7;
+                }
+                else if(leftPressed && paddleX > 0){
+                    paddleX -= 7;
+                }
+                
             }
             requestAnimationFrame(draw);
+            
         }
 
         function drawPaddle(){
             ctx.beginPath();
             ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight);
-            ctx.fillStyle = "#0095DD";
+            ctx.fillStyle = "#7896dc";
             ctx.fill();
             ctx.closePath();
         }
 
         function drawScore(){
             ctx.font = "16px Arial";
-            ctx.fillStyle = "#0095DD";
+            ctx.fillStyle = "#7896dc";
             ctx.fillText("Score: "+score, 8, 20);
         }
 
         function drawLives(){
             ctx.font = "16px Arial";
-            ctx.fillStyle = "#0095DD";
+            ctx.fillStyle = "#7896dc";
             ctx.fillText("Lives: "+lives, canvas.width-65, 20);
         }
 
@@ -136,6 +169,9 @@
             }
             else if(e.key == "Left" || e.key == "ArrowLeft"){
                 leftPressed = true;
+            }
+            if(e.key == "Enter"){
+                isPlaying = true;
             }
         }
 
@@ -165,7 +201,7 @@
                         bricks[c][r].y = brickY;
                         ctx.beginPath();
                         ctx.rect(brickX, brickY, brickWidth, brickHeight);
-                        ctx.fillStyle = randomBrickColor;
+                        ctx.fillStyle = "#7896dc";
                         ctx.fill();
                         ctx.closePath();    
                     }
